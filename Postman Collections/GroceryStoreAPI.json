@@ -1,0 +1,1684 @@
+{
+	"info": {
+		"_postman_id": "e96fcea0-8472-49c0-b529-ebe0ddaa55bb",
+		"name": "Grocery Store API",
+		"description": "[https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md](https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Happy Path",
+			"item": [
+				{
+					"name": "API Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3bbc4bac-1ba2-48bb-8ff6-5c47a8ab95f4",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body is correct\", () => {",
+									"    pm.response.to.have.body('{\"status\":\"UP\"}');",
+									"});",
+									"",
+									"console.log(typeof pm.collectionVariables.get('firstProductInStockId'));",
+									"",
+									"pm.environment.set('firstName', 'Jamie');",
+									"",
+									"console.log(pm.environment.get('firstName'));",
+									"",
+									"pm.environment.unset('firstName')"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "42f323d8-3361-42cc-969a-6568814cedbb",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "f4d06a7c-350c-4e20-a680-f54a19aee93b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/status",
+						"description": "This request allows you to retrieve the status of the API by sending a GET request to the \"/status\" endpoint.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /status\n    \n\nUpon sending the request, the API will respond with the current status. The expected response body will be in JSON format and include a single property:\n\n- status: A string indicating the status of the API. If the value is \"UP\", it means the API is running as expected.\n    \n\nHere is an example of the expected response:\n\n```\n{\n    \"status\": \"UP\"\n}\n\n```\n\nIf the API is functioning correctly, the response will contain a status value of \"UP\". This indicates that the API is operational and running as expected.\n\nHowever, if there is no response or any other response is received, it indicates that the API is not functioning correctly. In such cases, further investigation may be required to identify and resolve any issues with the API.\n\nYou can use this request to check the current status of the API and ensure that it is functioning properly."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f19fd179-b12f-41ad-91f8-6f4732b48c46",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "24531bd2-b105-4c92-ab2e-fd00d0a942a4",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"const response = pm.response.json();",
+									"console.log(response[0].id);",
+									"pm.environment.set('firstProductInStockId', response[0].id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "099644b2-cb47-45d8-9d75-3d09245e65be",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?available=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true"
+								},
+								{
+									"key": "results",
+									"value": "20",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "coffee",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": "This request allows you to retrieve a list of products from the inventory by sending a GET request to the \"/products\" endpoint.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /products\n    \n\nParameters:\n\n- category (optional): A string parameter that specifies the category of products you want to be returned. It can have one of the following values: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee.\n- results (optional): An integer parameter that specifies the number of results you want. It must be a number between 1 and 20. By default, only 20 products will be displayed.\n- available (optional): A boolean parameter that specifies the availability of the products. By default, all products will be displayed.\n    \n\nExample of the request:\n\n```\nGET /products?category=coffee&results=10&available=true\n\n```\n\nIn the example above, the request is configured to retrieve a list of 10 available products from the \"coffee\" category.\n\nUpon a successful response (status code 200 OK), the API will return a JSON array containing the requested products. Each product object in the array will have the following properties:\n\n- id: The unique identifier of the product.\n- category: The category of the product.\n- name: The name of the product.\n- inStock: A boolean value indicating the availability of the product.\n    \n\nHere is an example of the response:\n\n```\n[\n    {\n        \"id\": 4643,\n        \"category\": \"coffee\",\n        \"name\": \"Starbucks Coffee Variety Pack, 100% Arabica\",\n        \"inStock\": true\n    },\n    {\n        \"id\": 4646,\n        \"category\": \"coffee\",\n        \"name\": \"Ethical Bean Medium Dark Roast, Espresso\",\n        \"inStock\": true\n    },\n    ...\n]\n\n```\n\nThis response includes an array of product objects, where each object represents a product from the inventory. The information provided includes the product's ID, category, name, and availability status.\n\nYou can use this request to retrieve a list of products based on specific criteria, such as category, availability, or the number of desired results."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "abbd256e-ea47-47e9-8db5-961ed139f8e7",
+								"exec": [
+									"const dynamicProductId = pm.environment.get('firstProductInStockId');",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response is an object\", () => {",
+									"    pm.expect(response).to.be.an('object')",
+									"});",
+									"",
+									"pm.test(\"Check product name\", () => {",
+									"    pm.expect(response.name).to.be.a('string')",
+									"});",
+									"",
+									"pm.test(\"Check product price is a number\", () => {",
+									"    pm.expect(response.price).to.be.a('number')",
+									"});",
+									"",
+									"pm.test(\"Check product price is a positive number\", () => {",
+									"    pm.expect(response.price).to.be.above(0)",
+									"});",
+									"",
+									"pm.test(\"Check product inStock\", () => {",
+									"    pm.expect(response.inStock).to.equal(true)",
+									"});",
+									"",
+									"pm.test(\"Correct product was retrived\", () => {",
+									"    pm.expect(response.id).to.eql(pm.environment.get('firstProductInStockId'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8608dd6a-189a-4cf2-ab25-ddf4d48560a0",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "b0035151-2cc2-4e84-a047-1f708f48aed8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:productId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":productId"
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "{{firstProductInStockId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "This request allows you to retrieve a single product from the inventory by sending a GET request to the \"/products/:productId\" endpoint, where \":productId\" is a path variable representing the ID of the product you wish to retrieve.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /products/:productId\n    \n\nParameters:\n\n- productId (required): An integer parameter specified as a path variable. It represents the ID of the product you want to retrieve.\n    \n\nExample of the request:\n\n```\nGET /products/12345\n\n```\n\nIn the example above, the request is configured to retrieve the product with the ID \"12345\".\n\nUpon a successful response (status code 200 OK), the API will return a JSON object containing the requested product. The product object will include various properties, such as its ID, category, name, price, and any other relevant information.\n\nIf the product label in PDF format is desired, an optional query parameter can be included:\n\n- product-label (optional): A boolean parameter that, if set to true, will return the product label in PDF format.\n    \n\nExample of the request with the product label query parameter:\n\n```\nGET /products/12345?product-label=true\n\n```\n\nIn this case, the API will return the product label in PDF format along with the product information.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the product with the specified ID is found.\n- 404 Not found: Indicates that there is no product with the specified ID in the inventory.\n    \n\nYou can use this request to retrieve detailed information about a specific product by providing its ID as a path variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "abbd256e-ea47-47e9-8db5-961ed139f8e7",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7c955c01-0e5b-4d93-ae75-4cc0c3bdd7eb",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "437012f2-d489-4851-a43d-786475cd7eaa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "This request allows you to retrieve a single product from the inventory by sending a GET request to the \"/products/:productId\" endpoint, where \":productId\" is a path variable representing the ID of the product you wish to retrieve.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /products/:productId\n    \n\nParameters:\n\n- productId (required): An integer parameter specified as a path variable. It represents the ID of the product you want to retrieve.\n    \n\nExample of the request:\n\n```\nGET /products/12345\n\n```\n\nIn the example above, the request is configured to retrieve the product with the ID \"12345\".\n\nUpon a successful response (status code 200 OK), the API will return a JSON object containing the requested product. The product object will include various properties, such as its ID, category, name, price, and any other relevant information.\n\nIf the product label in PDF format is desired, an optional query parameter can be included:\n\n- product-label (optional): A boolean parameter that, if set to true, will return the product label in PDF format.\n    \n\nExample of the request with the product label query parameter:\n\n```\nGET /products/12345?product-label=true\n\n```\n\nIn this case, the API will return the product label in PDF format along with the product information.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the product with the specified ID is found.\n- 404 Not found: Indicates that there is no product with the specified ID in the inventory.\n    \n\nYou can use this request to retrieve detailed information about a specific product by providing its ID as a path variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1178650e-9b22-446f-a488-d4346867111c",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has valid cart id\", () => {",
+									"    pm.expect(response).to.be.an('object');",
+									"    pm.expect(response).to.haveOwnProperty('cartId');",
+									"    pm.expect(response.cartId).to.be.a('string');",
+									"",
+									"    console.log(response.cartId);",
+									"    pm.environment.set('newCartId',response.cartId);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0b8a5d6e-c909-4f28-90e1-9149f1beaecf",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "affe9d36-e305-4545-941b-fe90e24b6037",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{baseUrl}}/carts",
+						"description": "To create a new cart, you can submit an empty POST request to the \"/carts\" endpoint. This request will create a new cart and return the cart ID in the response body.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /carts\n    \n\nNo parameters are required for this request.\n\nExample of the request:\n\n```\nPOST /carts\n\n```\n\nUpon a successful response (status code 201 Created), the API will return a JSON object in the response body, indicating that the cart has been created. The response body will include the following properties:\n\n- created: A boolean value indicating that the cart has been created (true).\n- cartId: A string representing the unique identifier of the newly created cart. This ID can be used to reference the cart in subsequent operations.\n    \n\nExample of the response body:\n\n```\n{\n   \"created\": true,\n   \"cartId\": \"bx0-ycNjqIm5IvufuuZ09\"\n}\n\n```\n\nIn the response body, the \"created\" property will be set to true, indicating the successful creation of the cart. The \"cartId\" property will contain the unique identifier assigned to the newly created cart.\n\nYou can use this request to create a new cart and obtain the cart ID for further operations related to the cart, such as adding items, updating quantities, or completing the checkout process."
+					},
+					"response": []
+				},
+				{
+					"name": "Add an item to cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe37e9ff-4437-458f-9350-9a358079a5ab",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Item was created\", () => {",
+									"    const response = pm.response.json();",
+									"    const item = response.itemId;    ",
+									"    pm.expect(response).to.be.an('object');",
+									"    pm.expect(response).to.haveOwnProperty('itemId');",
+									"    pm.expect(response.created).to.be.true;",
+									"    pm.expect(item).to.be.a('number');",
+									"    ",
+									"    pm.environment.set('lastAddedItemId',item);",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "dcc88313-843d-4e6e-b86c-ad0be563d52a",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "ddcc1219-8189-4ec0-894e-061497b9176d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"productId\": {{firstProductInStockId}},\n   \"quantity\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To add an item to an existing cart, you can send a POST request to the \"/carts/:cartId/items\" endpoint, where \":cartId\" is a path variable representing the ID of the cart to which you want to add the item.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /carts/:cartId/items\n    \n\nParameters:\n\n- cartId (required): A string parameter specified as a path variable. It represents the ID of the cart to which you want to add the item.\n- productId (required): A string parameter specified in the request body. It represents the ID of the product you want to add to the cart.\n- quantity (optional): An integer parameter specified in the request body. It represents the quantity of the product to add to the cart. If not provided, the default value is 1.\n    \n\nExample of the request:\n\n```\nPOST /carts/bx0-ycNjqIm5IvufuuZ09/items\n\n```\n\nIn the example above, the request is configured to add an item to the cart with the ID \"bx0-ycNjqIm5IvufuuZ09\".\n\nThe request body should be in JSON format and include the following properties:\n\n```\n{\n   \"productId\": \"1234\"\n}\n\n```\n\nIn the example above, the \"productId\" property is set to \"1234\", representing the ID of the product to be added to the cart.\n\nUpon a successful response (status code 201 Created), the API will indicate that the item has been added successfully.\n\nPossible response status codes:\n\n- 201 Created: Indicates that the item has been added successfully to the cart.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n    \n\nYou can use this request to add a single item to an existing cart by specifying the cart ID and the product ID in the request. Optionally, you can also provide the quantity of the item to add."
+					},
+					"response": []
+				},
+				{
+					"name": "Create an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "428bc69c-b0d2-4313-a3a2-33a13f97cdf9",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Order was created\", () => {",
+									"    const response = pm.response.json();",
+									"    const order = response.orderId;",
+									"    pm.expect(response).to.be.an('object');",
+									"    pm.expect(response.created).to.be.true;",
+									"    pm.expect(order).to.be.a('string');",
+									"",
+									"    pm.environment.set('lastOrderId',order);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "b6f967f2-2a46-4c22-9fa1-3aa1876fd706",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cartId\": \"{{newCartId}}\",\n    \"customerName\": \"{{$randomFullName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/orders",
+						"description": "To create a new order, you can send a POST request to the \"/orders\" endpoint. This request allows you to submit an order with the required information and complete the checkout process. Once the order is successfully submitted, the corresponding cart will be deleted.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n- cartId (required): A string parameter specified in the request body. It represents the ID of the cart from which the order will be created.\n- customerName (required): A string parameter specified in the request body. It represents the name of the customer placing the order.\n- comment (optional): A string parameter specified in the request body. It represents an optional comment or additional information associated with the order.\n    \n\nExample of the request:\n\n```\nPOST /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nThe request body should be in JSON format and include the following properties:\n\n```\n{\n    \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n    \"customerName\": \"John Doe\"\n}\n\n```\n\nIn the example above, the request is configured to create a new order with the cart ID \"ZFe4yhG5qNhmuNyrbLWa4\" and the customer name \"John Doe\".\n\nUpon a successful response (status code 201 Created), the API will indicate that the order has been created successfully.\n\nPossible response status codes:\n\n- 201 Created: Indicates that the order has been created successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to create a new order by providing the necessary information, including the cart ID and the customer's name. Remember to include the appropriate bearer token in the Authorization header for authentication purposes."
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9a4b7671-8dff-45af-b201-fbbf3da78b49",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Created order is in the list', () => {",
+									"    const response = pm.response.json();",
+									"    let order = response.find((order) => order.id === pm.environment.get('lastOrderId'));",
+									"    pm.expect(order).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8199267c-5f0a-4cad-89ac-25e96706d1ff",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "de5ab213-05a7-4d73-9054-1256994d0e95",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/orders",
+						"description": "To retrieve all orders created by the API client, you can send a GET request to the \"/orders\" endpoint. This request allows you to fetch a list of all orders associated with the authenticated API client.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n    \n\nExample of the request:\n\n```\nGET /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nUpon a successful response (status code 200 OK), the API will provide a list of all orders created by the API client.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the API will return the list of orders.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to retrieve all orders created by the API client by including the appropriate bearer token in the Authorization header for authentication purposes."
+					},
+					"response": []
+				},
+				{
+					"name": "Update an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5241e771-5708-4e1c-b383-dcefeb337c9f",
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "33f24610-da5b-4b1b-a71a-b006ef1275f7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"customerName\": \"Joe Doe\",\n \"comment\": \"Pickup at 9 PM\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"query": [
+								{
+									"key": "customerName",
+									"value": "Joe Doe",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{lastOrderId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To update an existing order, you can send a PATCH request to the \"/orders/:orderId\" endpoint. This request allows you to modify the customer name or add a comment to the order.\n\nThe request should have the following characteristics:\n\n- Method: PATCH\n- Endpoint: /orders/:orderId\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n- orderId (required): A string parameter specified in the path. It represents the ID of the order that you want to update.\n- customerName (optional): A string parameter specified in the request body. It represents the updated name of the customer associated with the order.\n- comment (optional): A string parameter specified in the request body. It represents an optional comment or additional information to be added to the order.\n    \n\nExample of the request:\n\n```\nPATCH /orders/:orderId\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nThe request body should be in JSON format and include the properties that you want to update:\n\n```\n{\n \"customerName\": \"Joe Doe\"\n}\n\n```\n\nIn the example above, the request is configured to update the customer name of the order to \"Joe Doe\".\n\nUpon a successful response (status code 204 No Content), the API will indicate that the order has been updated successfully.\n\nPossible response status codes:\n\n- 204 No Content: Indicates that the order has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n- 404 Not Found: Indicates that there is no order with the specified ID associated with the API client.\n    \n\nYou can use this request to update an existing order by providing the necessary information, such as the order ID and the properties that you want to update (e.g., customer name, comment). Remember to include the appropriate bearer token in the Authorization header for authentication purposes."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7df52dbd-0187-47be-8f99-3c0059822bcc",
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "007dfdc9-ca13-4e91-93c5-1ab87ac2aaff",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To delete an item from the cart, you can send a DELETE request to the \"/carts/:cartId/items/:itemId\" endpoint. This request allows you to remove an item from the specified cart.\n\nThe request should have the following characteristics:\n\n- Method: DELETE\n- Endpoint: /carts/:cartId/items/:itemId\n    \n\nParameters:\n\n- cartId (required): A string parameter specified in the path. It represents the ID of the cart containing the item you want to delete.\n- itemId (required): A string parameter specified in the path. It represents the ID of the item you want to delete within the specified cart.\n    \n\nExample of the request:\n\n```\nDELETE /carts/:cartId/items/:itemId\n\n```\n\nIn the example above, the \":cartId\" and \":itemId\" placeholders should be replaced with the actual cart ID and item ID respectively.\n\nUpon a successful response (status code 204 No Content), the API will indicate that the item has been deleted successfully.\n\nPossible response status codes:\n\n- 204 No Content: Indicates that the item has been deleted successfully.\n- 404 Not Found: Indicates that either the cart or the item could not be found.\n    \n\nYou can use this request to delete an item from the cart by specifying the cart ID and the item ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Register a new API client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1989bb65-8052-49f3-9b11-f2f4322b3a56",
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "82e7d315-dcb9-4566-9da2-fc587305aa76",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"clientName\": \"Postman on Dmitry's computer\",\n   \"clientEmail\": \"fitlifeua@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api-clients",
+						"description": "To register a new API client, you can send a POST request to the \"/api-clients\" endpoint. This request allows you to register your API client by providing the required information.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /api-clients\n    \n\nParameters:  \nThe request body should be in JSON format and include the following properties:\n\n- clientName (required): A string parameter specified in the request body. It represents the name of the API client.\n- clientEmail (required): A string parameter specified in the request body. It represents the email address of the API client. Note that the email address does not need to be a real email address, as it will not be stored on the server.\n    \n\nExample of the request:\n\n```\nPOST /api-clients\n\n```\n\nThe request body should include the client name and email:\n\n```\n{\n   \"clientName\": \"Postman on Dmitry's computer\",\n   \"clientEmail\": \"fitlifeua@gmail.com\"\n}\n\n```\n\nIn the example above, the request is configured to register a new API client with the name \"Postman on Dmitry's computer\" and the email address \"[fitlifeua@gmail.com](mailto:valentin@example.com)\".\n\nUpon a successful response (status code 201 Created), the API will indicate that the client has been registered successfully. The response body will contain the access token, which can be used for subsequent authentication when making requests to the API.\n\nPossible response status codes:\n\n- 201 Created: Indicates that the client has been registered successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 409 Conflict: Indicates that an API client has already been registered with the same email address.\n    \n\nYou can use this request to register a new API client by providing the client name and email. The API will return the access token in the response body, which can be used for authentication purposes in subsequent requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b7bb541-0074-4cc9-920d-e60d12ae22bd",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "aa9c0532-fcda-4ae6-b516-f3c3b9964a02",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "78e18dd8-9dc4-459d-bad8-d92f02fe9946",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "## Request Description:\n\nTo retrieve the items in a specific cart, you can send a GET request to the \"/carts/:cartId/items\" endpoint, where \":cartId\" is a path variable representing the ID of the cart.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /carts/:cartId/items\n    \n\nParameters:\n\n- cartId (required): A string parameter specified as a path variable. It represents the ID of the cart for which you wish to retrieve the items.\n    \n\nExample of the request:\n\n```\nGET /carts/bx0-ycNjqIm5IvufuuZ09/items\n\n```\n\nIn the example above, the request is configured to retrieve the items in the cart with the ID \"bx0-ycNjqIm5IvufuuZ09\".\n\nUpon a successful response (status code 200 OK), the API will return a JSON array containing the items in the specified cart. Each item object in the array will include details such as the item ID, name, quantity, price, and any other relevant information.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the items in the specified cart are found.\n- 404 Not found: Indicates that there is no cart with the specified ID.\n    \n\nYou can use this request to retrieve the items in a specific cart by providing the cart ID as a path variable. The API will return the items in the cart as a JSON array, allowing you to retrieve and work with the item details as needed."
+					},
+					"response": []
+				},
+				{
+					"name": "Update quantity of an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4e3ea0ef-f31d-45c8-8d77-1173af6b0465",
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ddb2c462-c2ba-4c04-be3b-630400fa789d",
+								"exec": [
+									"console.clear();",
+									"",
+									"function getRandomNumber(maxValue) {",
+									"    return Math.floor(Math.random() * maxValue);",
+									"}",
+									"",
+									"pm.environment.set('randomQuantity', getRandomNumber(10));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "48d81638-2a79-453c-a22a-76b4d4dfe1f1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": {{randomQuantity}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To modify an item in the cart, you can send a PATCH request to the \"/carts/:cartId/items/:itemId\" endpoint. This request allows you to update the quantity of an item in the specified cart.\n\nThe request should have the following characteristics:\n\n- Method: PATCH\n- Endpoint: /carts/:cartId/items/:itemId\n    \n\nParameters:\n\n- cartId (required): A string parameter specified in the path. It represents the ID of the cart containing the item you want to modify.\n- itemId (required): A string parameter specified in the path. It represents the ID of the item you want to modify within the specified cart.\n- quantity (required): An integer parameter specified in the request body. It represents the updated quantity of the item.\n    \n\nExample of the request:\n\n```\nPATCH /carts/:cartId/items/:itemId\n\n```\n\nThe request body should be in JSON format and include the quantity parameter:\n\n```\n{\n  \"quantity\": 5\n}\n\n```\n\nIn the example above, the request is configured to update the quantity of the item to 5.\n\nUpon a successful response (status code 204 No Content), the API will indicate that the item has been updated successfully.\n\nPossible response status codes:\n\n- 204 No Content: Indicates that the item has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid or missing.\n- 404 Not Found: Indicates that either the cart or the item could not be found.\n    \n\nYou can use this request to modify an item in the cart by specifying the cart ID, item ID, and the updated quantity."
+					},
+					"response": []
+				},
+				{
+					"name": "Replace an item in the cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c64f78ea-f362-4f25-811f-07e94b10804e",
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "a1c7c9f5-3b51-43ea-b47d-02b155e5b2e3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": 4643,\n  \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{newCartId}}",
+									"type": "string"
+								},
+								{
+									"key": "itemId",
+									"value": "{{lastAddedItemId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To replace an item in the cart, you can send a PUT request to the \"/carts/:cartId/items/:itemId\" endpoint. This request allows you to update the product and quantity of an item in the specified cart.\n\nThe request should have the following characteristics:\n\n- Method: PUT\n- Endpoint: /carts/:cartId/items/:itemId\n    \n\nParameters:\n\n- cartId (required): A string parameter specified in the path. It represents the ID of the cart containing the item you want to replace.\n- itemId (required): A string parameter specified in the path. It represents the ID of the item you want to replace within the specified cart.\n- productId (required): An integer parameter specified in the request body. It represents the updated product ID for the item.\n- quantity (optional): An integer parameter specified in the request body. It represents the updated quantity of the item. If not provided, the quantity will remain unchanged.\n    \n\nExample of the request:\n\n```\nPUT /carts/:cartId/items/:itemId\n\n```\n\nThe request body should be in JSON format and include the productId parameter:\n\n```\n{\n  \"productId\": 1234\n}\n\n```\n\nIn the example above, the request is configured to replace the item in the cart with the product ID 1234.\n\nUpon a successful response (status code 204 No Content), the API will indicate that the item has been replaced successfully.\n\nPossible response status codes:\n\n- 204 No Content: Indicates that the item has been updated successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid or missing.\n- 404 Not Found: Indicates that either the cart or the item could not be found.\n    \n\nYou can use this request to replace an item in the cart by specifying the cart ID, item ID, and the updated product ID. Optionally, you can also provide the updated quantity."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "03407535-b4cc-4e32-adfa-3dfd151e2864",
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "9555ef37-4c00-402c-8dc7-54e05c0e8337",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"query": [
+								{
+									"key": "customerName",
+									"value": "Joe Doe",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{lastOrderId}}",
+									"type": "string"
+								}
+							]
+						},
+						"description": "To delete an order, you can send a DELETE request to the \"/orders/:orderId\" endpoint. This request allows you to remove an order based on its unique order ID.\n\nThe request should have the following characteristics:\n\n- Method: DELETE\n- Endpoint: /orders/:orderId\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should include the bearer token of the API client to authenticate the request.\n- orderId (required): A string parameter specified in the path. It represents the ID of the order you want to delete.\n    \n\nExample of the request:\n\n```\nDELETE /orders/:orderId\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nIn the example above, the \":orderId\" placeholder should be replaced with the actual order ID, and the Authorization header should include the bearer token of the API client.\n\nUpon a successful response (status code 204 No Content), the API will indicate that the order has been deleted successfully.\n\nPossible response status codes:\n\n- 204 No Content: Indicates that the order has been deleted successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n- 404 Not Found: Indicates that there is no order with the specified ID associated with the API client.\n    \n\nYou can use this request to delete an order by specifying the order ID and providing the necessary authorization."
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "67c58ceb-29d3-4e65-a284-b3375a655402",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Error message contains the deleted order id\", () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('object');",
+									"    pm.expect(response).to.haveOwnProperty('error');",
+									"    ",
+									"    const deletedOrderId = pm.environment.get('lastOrderId');",
+									"    console.log(deletedOrderId);",
+									"    pm.expect(response.error).contains(deletedOrderId);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7a34f397-1594-4bd2-ad18-81326402914a",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "a8369b0c-bdf0-4772-8601-36bf83164ad3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{accessToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:orderId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{lastOrderId}}",
+									"type": "string"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "77f4d338-c532-4133-84dd-ff964e7bbead"
+		},
+		{
+			"name": "Missing authication",
+			"item": [
+				{
+					"name": "Missing header",
+					"item": [
+						{
+							"name": "Get all orders - Missing authorization header",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a4b7671-8dff-45af-b201-fbbf3da78b49",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "cdfb275a-cc4d-4c04-97d0-52d62b7498ba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "To retrieve all orders created by the API client, you can send a GET request to the \"/orders\" endpoint. This request allows you to fetch a list of all orders associated with the authenticated API client.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n    \n\nExample of the request:\n\n```\nGET /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nUpon a successful response (status code 200 OK), the API will provide a list of all orders created by the API client.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the API will return the list of orders.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to retrieve all orders created by the API client by including the appropriate bearer token in the Authorization header for authentication purposes."
+							},
+							"response": []
+						},
+						{
+							"name": "Create an order - Missing autorization header",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "428bc69c-b0d2-4313-a3a2-33a13f97cdf9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "a9f68b3a-41e4-41ca-bebd-6bdd76dadaba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": \"BAiwuvkb2IAqcwoCgvE82\",\n    \"customerName\": \"Dmitry\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "To create a new order, you can send a POST request to the \"/orders\" endpoint. This request allows you to submit an order with the required information and complete the checkout process. Once the order is successfully submitted, the corresponding cart will be deleted.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n- cartId (required): A string parameter specified in the request body. It represents the ID of the cart from which the order will be created.\n- customerName (required): A string parameter specified in the request body. It represents the name of the customer placing the order.\n- comment (optional): A string parameter specified in the request body. It represents an optional comment or additional information associated with the order.\n    \n\nExample of the request:\n\n```\nPOST /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nThe request body should be in JSON format and include the following properties:\n\n```\n{\n    \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n    \"customerName\": \"John Doe\"\n}\n\n```\n\nIn the example above, the request is configured to create a new order with the cart ID \"ZFe4yhG5qNhmuNyrbLWa4\" and the customer name \"John Doe\".\n\nUpon a successful response (status code 201 Created), the API will indicate that the order has been created successfully.\n\nPossible response status codes:\n\n- 201 Created: Indicates that the order has been created successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to create a new order by providing the necessary information, including the cart ID and the customer's name. Remember to include the appropriate bearer token in the Authorization header for authentication purposes."
+							},
+							"response": []
+						},
+						{
+							"name": "Get a single order - Missing authorization token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "67c58ceb-29d3-4e65-a284-b3375a655402",
+										"exec": [
+											"pm.test(\"Status code is 401\", () => {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "496aa8b8-63a5-4d25-9047-0a4e25ef692b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/orders/:orderId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders",
+										":orderId"
+									],
+									"variable": [
+										{
+											"id": "4a588064-b35c-4f04-b6b2-97e6692cd0c7",
+											"key": "orderId",
+											"value": "{{lastOrderId}}",
+											"type": "string"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_id": "26e0b9fe-5933-416a-b1bd-8789789ce5ac",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e5b049e6-6e4a-4b49-b8fe-ead90795db81",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b1d35bbc-7260-413c-bcd5-b0612c3cd826",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response body assertion\", () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.error).to.eql('Missing Authorization header.');",
+									"});"
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Invalid token",
+					"item": [
+						{
+							"name": "Get all orders - Invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a4b7671-8dff-45af-b201-fbbf3da78b49",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "b5ffed59-dcac-4cb6-8e0d-a9972d7f7c82",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+										"key": "Authorization",
+										"value": "d6716fa14a31fb837ad407e0df8f4b496b9021ac57cba12f90c3155c88863155",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "To retrieve all orders created by the API client, you can send a GET request to the \"/orders\" endpoint. This request allows you to fetch a list of all orders associated with the authenticated API client.\n\nThe request should have the following characteristics:\n\n- Method: GET\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n    \n\nExample of the request:\n\n```\nGET /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nUpon a successful response (status code 200 OK), the API will provide a list of all orders created by the API client.\n\nPossible response status codes:\n\n- 200 OK: Indicates a successful response, and the API will return the list of orders.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to retrieve all orders created by the API client by including the appropriate bearer token in the Authorization header for authentication purposes."
+							},
+							"response": []
+						},
+						{
+							"name": "Create an order - Invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "428bc69c-b0d2-4313-a3a2-33a13f97cdf9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "9096d8ab-cb70-4770-8b65-725515fb77a5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "d6716fa14a31fb837ad407e0df8f4b496b9021ac57cba12f90c3155c88863155",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": \"BAiwuvkb2IAqcwoCgvE82\",\n    \"customerName\": \"Dmitry\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/orders",
+								"description": "To create a new order, you can send a POST request to the \"/orders\" endpoint. This request allows you to submit an order with the required information and complete the checkout process. Once the order is successfully submitted, the corresponding cart will be deleted.\n\nThe request should have the following characteristics:\n\n- Method: POST\n- Endpoint: /orders\n    \n\nParameters:\n\n- Authorization (required): A string parameter specified in the header. It should contain the bearer token of the API client for authentication purposes.\n- cartId (required): A string parameter specified in the request body. It represents the ID of the cart from which the order will be created.\n- customerName (required): A string parameter specified in the request body. It represents the name of the customer placing the order.\n- comment (optional): A string parameter specified in the request body. It represents an optional comment or additional information associated with the order.\n    \n\nExample of the request:\n\n```\nPOST /orders\nAuthorization: Bearer <YOUR TOKEN>\n\n```\n\nThe request body should be in JSON format and include the following properties:\n\n```\n{\n    \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n    \"customerName\": \"John Doe\"\n}\n\n```\n\nIn the example above, the request is configured to create a new order with the cart ID \"ZFe4yhG5qNhmuNyrbLWa4\" and the customer name \"John Doe\".\n\nUpon a successful response (status code 201 Created), the API will indicate that the order has been created successfully.\n\nPossible response status codes:\n\n- 201 Created: Indicates that the order has been created successfully.\n- 400 Bad Request: Indicates that the parameters provided in the request are invalid.\n- 401 Unauthorized: Indicates that the request has not been authenticated. Check the response body for additional details.\n    \n\nYou can use this request to create a new order by providing the necessary information, including the cart ID and the customer's name. Remember to include the appropriate bearer token in the Authorization header for authentication purposes."
+							},
+							"response": []
+						},
+						{
+							"name": "Get a single order - Invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "67c58ceb-29d3-4e65-a284-b3375a655402",
+										"exec": [
+											"pm.test(\"Status code is 401\", () => {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"_postman_id": "b74c82c7-9b89-4f1c-958d-0c38a8fe84e3",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "d6716fa14a31fb837ad407e0df8f4b496b9021ac57cba12f90c3155c88863155"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/orders/:orderId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"orders",
+										":orderId"
+									],
+									"variable": [
+										{
+											"id": "9efd548d-6de5-4420-b23b-4eef67266099",
+											"key": "orderId",
+											"value": "{{lastOrderId}}",
+											"type": "string"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_id": "faa6ebee-6736-47b1-8308-66a1599f85a1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e6c2ccd6-4655-42b1-8463-f15e9e667e24",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ae191f9b-37e8-4bca-947d-fabefcb608a6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Invalid token response assertion\", () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.error).to.eql('Invalid bearer token.');",
+									"});"
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"_postman_id": "ca9230b0-e259-4aca-a749-70b39652cc41",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a802f268-3433-4705-9d21-ee87a616fdd1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4751d1eb-84fe-465c-83db-7e0edd52afde",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 401\", () => {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Invalid inputs",
+			"item": [
+				{
+					"name": "Get all products - Invalid category",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f19fd179-b12f-41ad-91f8-6f4732b48c46",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "24531bd2-b105-4c92-ab2e-fd00d0a942a4",
+								"exec": [
+									"pm.test(\"Response body assertion\", () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.error).to.contain(\"Invalid value for query parameter 'category'.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "0f222b1b-3e4c-4d7a-bd0b-533573775974",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?category=Invalid-category",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "20",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "Invalid-category"
+								}
+							]
+						},
+						"description": "This request allows to verify correctness of the error when the **category** parameter **is wrong**\n\nExample of the request:\n\n```\nGET /products?category=Invalid-category\n\n```\n\nIn the example above, the request is configured to retrieve a list of products from the Invalid-category that doesn't exists.\n\nHere is an example of the response:\n\n```\n{\n    \"Invalid value for query parameter 'category'. Must be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee\"\n}\n\n```\n\nThe request includes test:\n\n```\npm.test(\"Response body assertion\", () => {\n    const response = pm.response.json();\n    pm.expect(response.error).to.contain(\"Invalid value for query parameter 'category'.\");\n});\n\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results > Maximum",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f19fd179-b12f-41ad-91f8-6f4732b48c46",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "24531bd2-b105-4c92-ab2e-fd00d0a942a4",
+								"exec": [
+									"pm.test(\"Response body assertion\", () => {",
+									"    const response = pm.response.json();",
+									"    const expectedError = \"Invalid value for query parameter 'results'. Cannot be greater than 20.\";",
+									"    pm.expect(response.error).to.eql(expectedError);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "439d2145-a972-4b03-bb1a-3591bea79e47",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=21",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "21"
+								},
+								{
+									"key": "category",
+									"value": "Invalid-category",
+									"disabled": true
+								}
+							]
+						},
+						"description": "This request allows to verify correctness of the error when the **results** parameter **is higher than maximum**\n\nExample of the request:\n\n```\nGET /products?results=21\n\n```\n\nIn the example above, the request is configured to retrieve a list of 21 available products.\n\nHere is an example of the response:\n\n```\n{\n    \"error\": \"Invalid value for query parameter 'results'. Cannot be greater than 0.\"\n}\n\n```\n\nThe request includes test:\n\n```\npm.test(\"Response body assertion\", () => {\n    const response = pm.response.json();\n    const expectedError = \"Invalid value for query parameter 'results'. Cannot be greater than 20.\";\n    pm.expect(response.error).to.eql(expectedError);\n});\n\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results < Minimum",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f19fd179-b12f-41ad-91f8-6f4732b48c46",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "24531bd2-b105-4c92-ab2e-fd00d0a942a4",
+								"exec": [
+									"pm.test(\"Response body assertion\", () => {",
+									"    const response = pm.response.json();",
+									"    const expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\";",
+									"    pm.expect(response.error).to.eql(expectedError);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "2d19885e-6404-484c-bd8e-6dea35626623",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=-1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "-1"
+								},
+								{
+									"key": "category",
+									"value": "Invalid-category",
+									"disabled": true
+								}
+							]
+						},
+						"description": "This request allows to verify correctness of the error when the **results** parameter **is lower than minimum**\n\nExample of the request:\n\n```\nGET /products?results=-1\n\n```\n\nIn the example above, the request is configured to retrieve a list of -1 available products.\n\nHere is an example of the response:\n\n```\n{\n    \"error\": \"Invalid value for query parameter 'results'. Must be greater than 0.\"\n}\n\n```\n\nThe request includes test:\n\n```\npm.test(\"Response body assertion\", () => {\n    const response = pm.response.json();\n    const expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\";\n    pm.expect(response.error).to.eql(expectedError);\n});\n\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products - Results = 0",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f19fd179-b12f-41ad-91f8-6f4732b48c46",
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "24531bd2-b105-4c92-ab2e-fd00d0a942a4",
+								"exec": [
+									"console.log(pm.environment.name);",
+									"",
+									"if (pm.environment.name === 'Testing') {",
+									"    pm.test(\"Status code is 400\", function () {",
+									"        pm.response.to.have.status(400);",
+									"    });",
+									"",
+									"    pm.test(\"Response body assertion\", () => {",
+									"        const response = pm.response.json();",
+									"        const expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\";",
+									"        pm.expect(response.error).to.eql(expectedError);",
+									"    });",
+									"};",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_id": "1d4ab17d-1d81-49b5-af44-f0c0c3847c7d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?results=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "results",
+									"value": "0"
+								},
+								{
+									"key": "category",
+									"value": "Invalid-category",
+									"disabled": true
+								}
+							]
+						},
+						"description": "This request allows to verify correctness of the error when the **results** parameter **is lower than minimum**\n\nExample of the request:\n\n```\nGET /products?results=-1\n\n```\n\nIn the example above, the request is configured to retrieve a list of -1 available products.\n\nHere is an example of the response:\n\n```\n{\n    \"error\": \"Invalid value for query parameter 'results'. Must be greater than 0.\"\n}\n\n```\n\nThe request includes test:\n\n```\npm.test(\"Response body assertion\", () => {\n    const response = pm.response.json();\n    const expectedError = \"Invalid value for query parameter 'results'. Must be greater than 0.\";\n    pm.expect(response.error).to.eql(expectedError);\n});\n\n```"
+					},
+					"response": []
+				}
+			],
+			"_postman_id": "e1d2c2b3-e201-478d-988f-fb19ee2b9810",
+			"description": "This collection includes requests and tests that allows to verify requests statuses and errors\n\nThe general test for entire collection is status code assertion:\n\n```\npm.test(\"Status code is 400\", () => {\n    pm.response.to.have.status(400);\n})\n\n```",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6dc0d0f2-9dc3-41f9-9a0a-ae284393dada",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "eff53195-987f-4db1-bfba-120c8180f013",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 400\", () => {",
+							"    pm.response.to.have.status(400);",
+							"})"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4215a820-b36b-4e22-be02-12bd9aae7a22",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8a64c2ea-da19-404a-ac1b-e952764303fb",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
